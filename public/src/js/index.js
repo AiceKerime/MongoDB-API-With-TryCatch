@@ -65,7 +65,6 @@ const saveData = () => {
     document.getElementById('float').value = ''
     document.getElementById('date').value = ''
     document.getElementById('boolean').value = ''
-    return false
 }
 
 // EDIT
