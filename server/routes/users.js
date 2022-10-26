@@ -1,6 +1,7 @@
 const { ObjectId } = require('bson');
 const express = require('express');
 const router = express.Router();
+const moment = require('moment')
 
 module.exports = (db) => {
   // ROUTER GET
@@ -85,6 +86,17 @@ module.exports = (db) => {
   });
 
   // ROUTER EDIT
+  router.get('/edit/:id', (req, res) => {
+    db.collection("dataBread").findOne({ "_id": ObjectId(`${req.params.id}`) }, (err, data) => {
+      if (err) res.json({ success: false })
+      if (data.length == 0) return res.json({ success: false, message: 'Failed to get data' })
+      res.json({
+        success: true,
+        data: data[0]
+      })
+    })
+  })
+
   router.put('/edit/:id', (req, res) => {
     const { string, integer, float, date, boolean } = req.body
 

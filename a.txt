@@ -1,0 +1,19 @@
+const editData = (id) => {
+    fetch('http://localhost:3006/users/edit/${id}', {
+        method: 'GET',
+        header: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            const id = document
+            const string = document.getElementById('string').value
+            const integer = document.getElementById('integer').value
+            const float = document.getElementById('float').value
+            const date = document.getElementById('date').value
+            const boolean = document.getElementById('boolean').value
+        })
+    document.getElementById('form-users')
+        .catch(err)
+}

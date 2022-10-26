@@ -1,5 +1,6 @@
-let idEdit = null
+let editID = null
 
+// VIEW OR GETTING DATA
 const readData = () => {
     fetch('http://localhost:3006/users')
         .then((response) => response.json())
@@ -12,10 +13,10 @@ const readData = () => {
                     <td>${item.string}</td>
                     <td>${item.integer}</td>
                     <td>${item.float}</td>
-                    <td>${item.date}</td>
+                    <td>${moment(item.date).format('DD MMMM YYYY')}</td>
                     <td>${item.boolean}</td>
                     <td>
-                        <button type="submit" onclick="editData(${JSON.stringify(item)})" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button type="submit" onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                         <button type="submit" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>
@@ -28,6 +29,7 @@ const readData = () => {
         })
 }
 
+// ADD
 const saveData = () => {
     const string = document.getElementById('string').value
     const integer = document.getElementById('integer').value
@@ -35,7 +37,7 @@ const saveData = () => {
     const date = document.getElementById('date').value
     const boolean = document.getElementById('boolean').value
 
-    if (idEdit == null) {
+    if (editID == null) {
         fetch('http://localhost:3006/users/add', {
             method: 'POST',
             headers: {
@@ -44,20 +46,18 @@ const saveData = () => {
             body: JSON.stringify({ string, integer, float, date, boolean })
         }).then((response) => response.json()).then((data) => {
             readData()
-        }).catch((err) => {
-            alert('Failed to add data ')
         })
     } else {
-        fetch(`http://localhost:3006/users/edit/${id}`, {
+        fetch(`http://localhost:3006/users/edit/${editID}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json '
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ string, integer, float, date, boolean })
         }).then((response) => response.json()).then((data) => {
             readData()
         })
-        idEdit = null
+        editID = null
     }
 
     document.getElementById('string').value = ''
@@ -68,15 +68,17 @@ const saveData = () => {
     return false
 }
 
-const editData = (users) => {
-    idEdit = users._id
-    document.getElementById('string').value = users.string
-    document.getElementById('integer').value = users.integer
-    document.getElementById('float').value = users.float
-    document.getElementById('date').value = users.date
-    document.getElementById('boolean').value = users.boolean
+// EDIT
+const editData = (user) => {
+    editID = user._id
+    document.getElementById('string').value = user.string
+    document.getElementById('integer').value = user.integer
+    document.getElementById('float').value = user.float
+    document.getElementById('date').value = moment(user.date).format('YYYY-MM-DD')
+    document.getElementById('boolean').value = user.boolean
 }
 
+// DELETE
 const deleteData = (id) => {
     fetch(`http://localhost:3006/users/delete/${id}`, {
         method: 'DELETE',
@@ -88,7 +90,15 @@ const deleteData = (id) => {
     })
 }
 
-document.getElementById("form-users").addEventListener("submit", function (event) {
+// SEARCH
+const search = () => { }
+
+// PAGINATION
+const pagination = () => {
+
+}
+
+document.getElementById("form-users").addEventListener("submit", (event) => {
     event.preventDefault()
     saveData()
 });
