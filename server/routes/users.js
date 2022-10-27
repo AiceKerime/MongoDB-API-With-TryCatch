@@ -6,12 +6,12 @@ const moment = require('moment')
 module.exports = (db) => {
   // ROUTER GET
   router.get('/', (req, res) => {
-    const url = req.url == '/' ? '/?page=1&sortBy=string&sortMode=1' : req.url;
+    // const url = req.url == '/' ? '/?page=1&sortBy=string&sortMode=1' : req.url;
     const page = req.query.page || 1;
     const limit = 3;
-    const offset = (page - 1) * limit;
+    const offset = limit == 'all' ? 0 : (page - 1) * limit;
     const wheres = {}
-    const filter = `&idCheck=${req.query.idCheck}&id=${req.query.id}&stringCheck=${req.query.stringCheck}&string=${req.query.string}&integerCheck=${req.query.integerCheck}&integer=${req.query.integer}&floatCheck=${req.query.floatCheck}&float=${req.query.float}&dateCheck=${req.query.dateCheck}&startDate=${req.query.startDate}&endDate=${req.query.endDate}&booleanCheck=${req.query.booleanCheck}&boolean=${req.query.boolean}`
+    // const filter = `&idCheck=${req.query.idCheck}&id=${req.query.id}&stringCheck=${req.query.stringCheck}&string=${req.query.string}&integerCheck=${req.query.integerCheck}&integer=${req.query.integer}&floatCheck=${req.query.floatCheck}&float=${req.query.float}&dateCheck=${req.query.dateCheck}&startDate=${req.query.startDate}&endDate=${req.query.endDate}&booleanCheck=${req.query.booleanCheck}&boolean=${req.query.boolean}`
 
     // SORTING
     const sortMongo = {}
@@ -51,15 +51,21 @@ module.exports = (db) => {
     }
 
     // Pagination
-    db.collection("dataBread").find(wheres).toArray(result => {
-      var total = result;
-      const pages = Math.ceil(total / limit)
+    db.collection("dataBread").find(wheres).count((err, data) => {
+      if (err) { return res.json({ success: false }) }
+      const total = data;
+      const totalPages = limit == 'all' ? 1 : Math.ceil(total / limit)
+      const limitation = limit == 'all' ? {} : { limit: parseInt(limit), skip: offset }
 
-      db.collection("dataBread").find(wheres).skip(offset).limit(limit).sort(sortMongo).toArray((err, data) => {
-        if (err) return console.log({ success: false })
+      db.collection("dataBread").find(wheres).skip(offset).limit(limit, limitation).sort(sortMongo).toArray((err, data) => {
+        if (err) return res.json({ success: false, err })
         res.json({
           success: true,
-          data
+          data,
+          limit,
+          page,
+          totalPages,
+          total
         })
       })
     })
