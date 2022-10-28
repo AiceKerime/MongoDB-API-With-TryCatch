@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./src/css/bootstrap.min.css">
     <link rel="stylesheet" href="./src/css/style.css">
 
-    <title>Index</title>
+    <title>BREADS</title>
 </head>
 
 <body class="bg-slate-300">
@@ -66,34 +66,31 @@
 
                 <form action="" id="form-search" method="get">
                     <div class="mb-3">
-                        <label for="string" class="form-label"><input type="checkbox" name="stringCheck"> String</label>
+                        <label for="string" class="form-label">String</label>
                         <input type="text" class="form-control" id="searchString">
                     </div>
 
                     <div class="mb-3">
-                        <label for="integer" class="form-label"><input type="checkbox" name="integerCheck">
-                            Integer</label>
+                        <label for="integer" class="form-label">Integer</label>
                         <input type="number" class="form-control" id="searchInteger">
                     </div>
 
                     <div class="mb-3">
-                        <label for="float" class="form-label"><input type="checkbox" name="floatCheck"> Float</label>
+                        <label for="float" class="form-label">Float</label>
                         <input type="number" step="0.005" class="form-control" id="searchFloat">
                     </div>
 
                     <div class="mb-3">
-                        <label for="date" class="form-label"><input type="checkbox" name="dateCheck" id="dateCheck">
-                            Date</label>
+                        <label for="date" class="form-label">Date</label>
                         <input type="date" class="form-control" id="searchStart">
                         To
                         <input type="date" class="form-control" id="searchEnd">
                     </div>
 
                     <div class="mb-3">
-                        <label for="boolean" class="form-label"><input type="checkbox" name="booleanCheck">
-                            Boolean</label>
+                        <label for="boolean" class="form-label">Boolean</label>
                         <select class="form-control" id="searchBoolean">
-                            <option value="" selected disabled>-- Choose Boolean --</option>
+                            <option value="">-- Choose Boolean --</option>
                             <option value=true>True</option>
                             <option value=false>False</option>
                         </select>
@@ -105,7 +102,8 @@
                                 Search</button>
                         </form>
 
-                        <button type="reset" class="btn btn-primary color"><i class="fa-solid fa-arrows-rotate"></i>
+                        <button onclick="readData()" class="btn btn-primary color"><i
+                                class="fa-solid fa-arrows-rotate"></i>
                             Reset</button>
                     </div>
                 </form>
@@ -117,7 +115,7 @@
                 <h2 class="text-center">Data Table</h2>
             </div>
             <table class="table table-striped">
-                <thead class="table-dark">
+                <thead class="table-dark thead">
                     <tr>
                         <th>No</th>
                         <th>String</th>

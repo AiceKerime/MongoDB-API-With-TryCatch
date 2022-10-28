@@ -10,6 +10,7 @@ module.exports = (db) => {
     const page = req.query.page || 1;
     const limit = 3;
     const offset = limit == 'all' ? 0 : (page - 1) * limit;
+
     const wheres = {}
     // const filter = `&idCheck=${req.query.idCheck}&id=${req.query.id}&stringCheck=${req.query.stringCheck}&string=${req.query.string}&integerCheck=${req.query.integerCheck}&integer=${req.query.integer}&floatCheck=${req.query.floatCheck}&float=${req.query.float}&dateCheck=${req.query.dateCheck}&startDate=${req.query.startDate}&endDate=${req.query.endDate}&booleanCheck=${req.query.booleanCheck}&boolean=${req.query.boolean}`
 
@@ -22,15 +23,15 @@ module.exports = (db) => {
     sortMongo[sortBy] = sortMode == "asc" ? 1 : -1;
 
     // FILTERS
-    if (req.query.string && req.query.stringCheck == 'on') {
+    if (req.query.string || req.query.stringCheck == 'on') {
       wheres["string"] = new RegExp(`${req.query.string}`, 'i')
     }
 
-    if (req.query.integer && req.query.integerCheck == 'on') {
+    if (req.query.integer || req.query.integerCheck == 'on') {
       wheres['integer'] = parseInt(req.query.integer)
     }
 
-    if (req.query.float && req.query.floatCheck == 'on') {
+    if (req.query.float || req.query.floatCheck == 'on') {
       wheres['float'] = JSON.parse(req.query.float)
     }
 
@@ -46,7 +47,7 @@ module.exports = (db) => {
       }
     }
 
-    if (req.query.boolean && req.query.booleanCheck == 'on') {
+    if (req.query.boolean || req.query.booleanCheck == 'on') {
       wheres['boolean'] = JSON.parse(req.query.boolean)
     }
 
