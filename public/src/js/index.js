@@ -159,6 +159,13 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
     readData()
 });
 
+
+// RESET DATA
+function resetData() {
+    document.getElementById("form-search").reset()
+    readData()
+}
+
 function sortTableByColumn(table, column, asc = true) {
     const dirModifier = asc ? 1 : -1;
     const tBody = table.tBodies[0];
