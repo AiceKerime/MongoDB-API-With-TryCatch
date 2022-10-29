@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="./src/css/bootstrap.min.css">
     <link rel="stylesheet" href="./src/css/style.css">
 
-    <title>BREADS</title>
+    <link rel="icon" href="./src/img/5968292.png">
+
+    <title>BREADS JQuery and VanillaJS</title>
 </head>
 
 <body class="bg-slate-300">
@@ -46,8 +48,8 @@
                         <label for="boolean" class="form-label">Boolean</label>
                         <select class="form-control" id="boolean">
                             <option value="" selected disabled>-- Choose Boolean --</option>
-                            <option value=true>True</option>
-                            <option value=false>False</option>
+                            <option value=true${user.boolean==true ? 'selected' : '' }>True</option>
+                            <option value=false${user.boolean==false ? 'selected' : '' }>False</option>
                         </select>
                     </div>
 
@@ -136,7 +138,12 @@
         </div>
     </div>
 
-    <script src="./src/js/index.js"></script>
+    <script src="./src/js/jquery-3.6.1.min.js"></script>
+
+    <script src="./src/js/jqueryIndex.js"></script>
+    <!-- Uncomment the code below if you want to use vanilla js -->
+    <!-- <script src="./src/js/index.js"></script> -->
+
     <script src="./src/js/moment.min.js"></script>
 </body>
 

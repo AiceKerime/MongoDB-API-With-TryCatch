@@ -5,30 +5,26 @@ let params = {
 }
 let link = new URLSearchParams(params).toString()
 
+$(document).ready(() => {
+    readData()
+
+    $('#form-users').submit((event) => {
+        event.preventDefault()
+        saveData()
+    })
+})
+
 // VIEW OR GETTING DATA
 const readData = () => {
-    fetch('http://localhost:3006/users').then((response) => {
-        if (!response.ok) {
-            throw new Erorr(`HTTP error! status: ${response.status}`)
-        }
-        return response.json()
-    })
-        .then((data) => {
-            params = { ...params, totalPages: data.data.totalPages }
-            let html = ''
-            let offset = (parseInt(params.page) - 1) * params.limit
-            fetch(`http://localhost:3006/users?${new URLSearchParams(params).toString()}`).then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`)
-                }
-                return response.json()
-            })
-                .then((data) => {
-                    params = { ...params, totalPages: data.totalPages }
-                    let html = ''
-                    let offset = (parseInt(params.page) - 1) * params.limit
-                    data.data.forEach((item, index) => {
-                        html += `
+    $.ajax({
+        method: "GET",
+        url: "http://localhost:3006/users"
+    }).done((data) => {
+        params = { ...params, totalPages: data.totalPages }
+        let html = ''
+        let offset = (parseInt(params.page) - 1) * params.limit
+        data.data.forEach((item, index) => {
+            html += `
                 <tr>
                     <td>${index + offset + 1}</td>
                     <td>${item.string}</td>
@@ -38,77 +34,64 @@ const readData = () => {
                     <td>${item.boolean}</td>
                     <td>
                         <button type="submit" onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                        <button type="submit" id="delete" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button type="submit" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>
                 `
-                    })
-                    document.getElementById('table-users').innerHTML = html
-                    pagination()
-                })
-                .catch((err) => {
-                    alert('Failed to get response')
-                })
         })
+        $('#table-users').html(html)
+        pagination()
+    }).fail((err) => {
+        alert('Failed to get response')
+    })
 }
 
 // ADD
 const saveData = () => {
-    const string = document.getElementById('string').value
-    const integer = document.getElementById('integer').value
-    const float = document.getElementById('float').value
-    const date = document.getElementById('date').value
-    const boolean = document.getElementById('boolean').value
+    const string = $('#string').val()
+    const integer = $('#integer').val()
+    const float = $('#float').val()
+    const date = $('#date').val()
+    const boolean = $('#boolean').val()
 
-    if (editID == null) {
-        fetch('http://localhost:3006/users/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json '
-            },
-            body: JSON.stringify({ string, integer, float, date, boolean })
-        }).then((response) => response.json()).then((data) => {
-            readData()
-        })
-    } else {
-        fetch(`http://localhost:3006/users/edit/${editID}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ string, integer, float, date, boolean })
-        }).then((response) => response.json()).then((data) => {
-            readData()
-        })
-        editID = null
-    }
+    $.ajax({
+        method: "POST",
+        url: "http://localhost:3006/users/add",
+        dataType: "json",
+        data: { string, integer, float, date, boolean }
+    }).done((data) => {
+        readData()
+    }).fail((err) => {
+        alert('Failed to add data')
+    })
 
-    document.getElementById('string').value = ''
-    document.getElementById('integer').value = ''
-    document.getElementById('float').value = ''
-    document.getElementById('date').value = ''
-    document.getElementById('boolean').value = ''
+    $('#string').val('')
+    $('#integer').val('')
+    $('#float').val('')
+    $('#date').val('')
+    $('#boolean').val('')
 }
 
 // EDIT
 const editData = (user) => {
     editID = user._id
-    document.getElementById('string').value = user.string
-    document.getElementById('integer').value = user.integer
-    document.getElementById('float').value = user.float
-    document.getElementById('date').value = moment(user.date).format('YYYY-MM-DD')
-    document.getElementById('boolean').value = user.boolean
+    $('#string').val(user.string)
+    $('#integer').val(user.integer)
+    $('#float').val(user.float)
+    $('#date').val(moment(user.date).format('YYYY-MM-DD'))
+    $('#boolean').val(user.boolean)
 }
 
 // DELETE
 const deleteData = (id) => {
-    fetch(`http://localhost:3006/users/delete/${id}`, {
+    $.ajax({
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => response.json()).then((data) => {
+        url: `http://localhost:3006/users/delete/${id}`,
+        dataType: "json"
+    }).done((data) => {
         readData()
+    }).fail(() => {
+        alert('Failed to delete data')
     })
 }
 
@@ -133,18 +116,13 @@ const pagination = () => {
         </li>
     </ul>
     `
-    document.getElementById('pagination').innerHTML = pagination
+    $('#pagination').html(pagination)
 }
 
 function changePage(page) {
     params = { ...params, page }
     readData()
 }
-
-document.getElementById("form-users").addEventListener("submit", (event) => {
-    event.preventDefault()
-    saveData()
-});
 
 document.getElementById("form-search").addEventListener("submit", (event) => {
     event.preventDefault()
@@ -160,7 +138,7 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
 });
 
 
-// RESET & REMOVE FUNCTION
+// RESET DATA
 function resetData() {
     document.getElementById("form-search").reset()
     readData()
@@ -202,5 +180,3 @@ document.querySelectorAll(".table-sortable th").forEach(headerCell => {
         sortTableByColumn(tableElement, headerIndex, !currentIsAscending);
     });
 });
-
-readData()
