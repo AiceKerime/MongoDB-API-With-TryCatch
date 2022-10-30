@@ -26,30 +26,30 @@
                 <form action="" id="form-users" method="post">
                     <div class="mb-3">
                         <label for="string" class="form-label">String</label>
-                        <input type="text" class="form-control" id="string">
+                        <input type="text" class="form-control" name="string" id="string">
                     </div>
 
                     <div class="mb-3">
                         <label for="integer" class="form-label">Integer</label>
-                        <input type="number" class="form-control" id="integer">
+                        <input type="number" class="form-control" name="integer" id="integer">
                     </div>
 
                     <div class="mb-3">
                         <label for="float" class="form-label">Float</label>
-                        <input type="number" step="0.005" class="form-control" id="float">
+                        <input type="number" step="0.005" class="form-control" name="float" id="float">
                     </div>
 
                     <div class="mb-3">
                         <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="date">
+                        <input type="date" class="form-control" name="date" id="date">
                     </div>
 
                     <div class="mb-3">
                         <label for="boolean" class="form-label">Boolean</label>
-                        <select class="form-control" id="boolean">
+                        <select class="form-control" name="boolean" id="boolean">
                             <option value="" selected disabled>-- Choose Boolean --</option>
-                            <option value=true${user.boolean==true ? 'selected' : '' }>True</option>
-                            <option value=false${user.boolean==false ? 'selected' : '' }>False</option>
+                            <option value=true>True</option>
+                            <option value=false>False</option>
                         </select>
                     </div>
 
@@ -69,29 +69,29 @@
                 <form action="" id="form-search" method="get">
                     <div class="mb-3">
                         <label for="string" class="form-label">String</label>
-                        <input type="text" class="form-control" id="searchString">
+                        <input type="text" class="form-control" name="string" id="searchString">
                     </div>
 
                     <div class="mb-3">
                         <label for="integer" class="form-label">Integer</label>
-                        <input type="number" class="form-control" id="searchInteger">
+                        <input type="number" class="form-control" name="integer" id="searchInteger">
                     </div>
 
                     <div class="mb-3">
                         <label for="float" class="form-label">Float</label>
-                        <input type="number" step="0.005" class="form-control" id="searchFloat">
+                        <input type="number" step="0.005" class="form-control" name="float" id="searchFloat">
                     </div>
 
                     <div class="mb-3">
                         <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="searchStart">
+                        <input type="date" class="form-control" name="searchStart" id="searchStart">
                         To
-                        <input type="date" class="form-control" id="searchEnd">
+                        <input type="date" class="form-control" name="searchEnd" id="searchEnd">
                     </div>
 
                     <div class="mb-3">
                         <label for="boolean" class="form-label">Boolean</label>
-                        <select class="form-control" id="searchBoolean">
+                        <select class="form-control" name="boolean" id="searchBoolean">
                             <option value="" disabled selected>-- Choose Boolean --</option>
                             <option value=true>True</option>
                             <option value=false>False</option>

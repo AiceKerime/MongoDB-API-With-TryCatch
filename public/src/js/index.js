@@ -12,23 +12,12 @@ const readData = () => {
             throw new Erorr(`HTTP error! status: ${response.status}`)
         }
         return response.json()
-    })
-        .then((data) => {
-            params = { ...params, totalPages: data.data.totalPages }
-            let html = ''
-            let offset = (parseInt(params.page) - 1) * params.limit
-            fetch(`http://localhost:3006/users?${new URLSearchParams(params).toString()}`).then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status ${response.status}`)
-                }
-                return response.json()
-            })
-                .then((data) => {
-                    params = { ...params, totalPages: data.totalPages }
-                    let html = ''
-                    let offset = (parseInt(params.page) - 1) * params.limit
-                    data.data.forEach((item, index) => {
-                        html += `
+    }).then((data) => {
+        params = { ...params, totalPages: data.totalPages }
+        let html = ''
+        let offset = (parseInt(params.page) - 1) * params.limit
+        data.data.forEach((item, index) => {
+            html += `
                 <tr>
                     <td>${index + offset + 1}</td>
                     <td>${item.string}</td>
@@ -42,15 +31,15 @@ const readData = () => {
                     </td>
                 </tr>
                 `
-                    })
-                    document.getElementById('table-users').innerHTML = html
-                    pagination()
-                })
-                .catch((err) => {
-                    alert('Failed to get response')
-                })
+        })
+        document.getElementById('table-users').innerHTML = html
+        pagination()
+    })
+        .catch((err) => {
+            alert('Failed to get response')
         })
 }
+
 
 // ADD
 const saveData = () => {
@@ -150,8 +139,8 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
     event.preventDefault()
     const page = 1
     const string = document.getElementById('searchString').value
-    const integer = document.getElementById('integer').value
-    const float = document.getElementById('float').value
+    const integer = document.getElementById('searchInteger').value
+    const float = document.getElementById('searchFloat').value
     const startDate = document.getElementById('searchStart').value
     const endDate = document.getElementById('searchEnd').value
     const boolean = document.getElementById('searchBoolean').value

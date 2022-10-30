@@ -84,7 +84,7 @@ module.exports = (db) => {
     }
 
     db.collection("dataBread").insertOne(Obj, (err) => {
-      if (err) return console.log({ success: false })
+      if (err) return res.json({ success: false })
       res.json({
         success: true
       })

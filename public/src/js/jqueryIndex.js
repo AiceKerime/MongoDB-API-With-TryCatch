@@ -8,10 +8,23 @@ let link = new URLSearchParams(params).toString()
 $(document).ready(() => {
     readData()
 
-    $('#form-users').submit((event) => {
+    $("#form-users").submit((event) => {
         event.preventDefault()
         saveData()
-    })
+    });
+
+    $("#form-search").submit((event) => {
+        event.preventDefault()
+        const page = 1
+        const string = $('#searchString').val()
+        const integer = $('#searchInteger').val()
+        const float = $('#searchFloat').val()
+        const startDate = $('#searchStart').val()
+        const endDate = $('#searchEnd').val()
+        const boolean = $('#searchBoolean').val()
+        params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+        readData()
+    });
 })
 
 // VIEW OR GETTING DATA
@@ -23,6 +36,7 @@ const readData = () => {
         params = { ...params, totalPages: data.totalPages }
         let html = ''
         let offset = (parseInt(params.page) - 1) * params.limit
+        console.log(offset)
         data.data.forEach((item, index) => {
             html += `
                 <tr>
@@ -46,7 +60,7 @@ const readData = () => {
     })
 }
 
-// ADD
+// ADD & Edit
 const saveData = () => {
     const string = $('#string').val()
     const integer = $('#integer').val()
@@ -54,17 +68,31 @@ const saveData = () => {
     const date = $('#date').val()
     const boolean = $('#boolean').val()
 
-    $.ajax({
-        method: "POST",
-        url: "http://localhost:3006/users/add",
-        dataType: "json",
-        data: { string, integer, float, date, boolean }
-    }).done((data) => {
-        readData()
-    }).fail((err) => {
-        alert('Failed to add data')
-    })
-
+    if (editID == null) {
+        $.ajax({
+            method: "POST",
+            url: "http://localhost:3006/users/add",
+            dataType: "json",
+            data: { string, integer, float, date, boolean }
+        }).done((data) => {
+            readData()
+        }).fail((err) => {
+            alert('Failed to add data')
+        })
+    } else {
+        $.ajax(`http://localhost:3006/users/edit/${editID}`, {
+            method: 'PUT',
+            url: "http://localhost:3006/users/add",
+            dataType: "json",
+            data: { string, integer, float, date, boolean }
+        }).done((data) => {
+            readData()
+        }).fail((err) => {
+            alert('Failed to add data')
+        })
+        editID = null
+    }
+ 
     $('#string').val('')
     $('#integer').val('')
     $('#float').val('')
@@ -123,20 +151,6 @@ function changePage(page) {
     params = { ...params, page }
     readData()
 }
-
-document.getElementById("form-search").addEventListener("submit", (event) => {
-    event.preventDefault()
-    const page = 1
-    const string = document.getElementById('searchString').value
-    const integer = document.getElementById('integer').value
-    const float = document.getElementById('float').value
-    const startDate = document.getElementById('searchStart').value
-    const endDate = document.getElementById('searchEnd').value
-    const boolean = document.getElementById('searchBoolean').value
-    params = { ...params, string, integer, float, startDate, endDate, boolean, page }
-    readData()
-});
-
 
 // RESET DATA
 function resetData() {
