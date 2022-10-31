@@ -67,13 +67,13 @@ tbody tr:hover {
 
 .page-item .page-link {
     border: 2px solid #e2e8f0;
-    background-color: #a0a0a0;
-    color: #fff;
+    background-color: #b8c2ce;
+    color: rgb(0, 0, 0);
 }
 
 .page-item .page-link:hover {
     background-color: #cbd5e1;
-    color: #0284c7;
+    color: #0375ff;
 }
 
 .pagination li {

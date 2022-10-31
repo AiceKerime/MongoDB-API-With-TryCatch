@@ -23,30 +23,32 @@ module.exports = (db) => {
     sortMongo[sortBy] = sortMode == "asc" ? 1 : -1;
 
     // FILTERS
-    if (req.query.string) {
+    if (req.query.searchString && req.query.stringCheck == 'on') {
       wheres["string"] = new RegExp(`${req.query.string}`, 'i')
     }
 
-    if (req.query.integer) {
+    if (req.query.searchInteger && req.query.integerCheck == 'on') {
       wheres['integer'] = parseInt(req.query.integer)
     }
 
-    if (req.query.float) {
+    if (req.query.searchFloat && req.query.floatCheck == 'on') {
       wheres['float'] = JSON.parse(req.query.float)
     }
 
-    if (req.query.searchStart && req.query.searchEnd) {
-      wheres["date"] = {
-        $gte: new Date(`${req.query.searchStart}`),
-        $lte: new Date(`${req.query.searchEnd}`)
+    if (req.query.dateCheck == "on") {
+      if (req.query.searchStart && req.query.searchEnd) {
+        wheres["date"] = {
+          $gte: new Date(`${req.query.searchStart}`),
+          $lte: new Date(`${req.query.searchEnd}`)
+        }
+      } else if (req.query.searchStart) {
+        wheres["date"] = { $gte: new Date(`${req.query.searchStart}`) };
+      } else if (req.query.searchEnd) {
+        wheres["date"] = { $lte: new Date(`${req.query.searchEnd}`) };
       }
-    } else if (req.query.searchStart) {
-      wheres["date"] = { $gte: new Date(`${req.query.searchStart}`) };
-    } else if (req.query.searchEnd) {
-      wheres["date"] = { $lte: new Date(`${req.query.searchEnd}`) };
     }
 
-    if (req.query.boolean) {
+    if (req.query.searchBoolean && req.query.stringCheck == 'on') {
       wheres['boolean'] = JSON.parse(req.query.boolean)
     }
 
@@ -64,8 +66,7 @@ module.exports = (db) => {
           data,
           limit,
           page,
-          totalPages,
-          total
+          totalPages
         })
       })
     })
