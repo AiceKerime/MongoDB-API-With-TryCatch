@@ -1,7 +1,9 @@
 let editID = null
 let params = {
     limit: 3,
-    page: 1
+    page: 1,
+    sortBy: '_id',
+    sortMode: 1
 }
 let link = new URLSearchParams(params).toString()
 
@@ -22,7 +24,14 @@ $(document).ready(() => {
         const startDate = $('#searchStart').val()
         const endDate = $('#searchEnd').val()
         const boolean = $('#searchBoolean').val()
+        // console.log(string, integer, float, startDate, endDate, boolean, 'DATA SEARCH')
         params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+        readData({ string, integer, float, startDate, endDate, boolean })
+    });
+
+    $('#pagination').on('click', '.page-link', function (event) {
+        event.preventDefault()
+        params = { ...params, page: parseInt($(this).attr('datapage')) }
         readData()
     });
 })
@@ -128,34 +137,24 @@ const deleteData = (id) => {
 
 // PAGINATION
 const pagination = () => {
-    $.ajax({
-        method: 'GET',
-        url: `http://localhost:3006/users`
-    }).done((data) => {
-        let pagination = `
-    <ul class="pagination">
-        <li class="page-item${params.page <= 1 ? ' disabled' : ''}">
-            <a class="page-link" id="dataPage" href="javascript:void(0)" onclick="changePage(${parseInt(params.page) - 1})" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
+    let pagination = `<ul class="pagination">
+                               <li class="page-item${params.page == 1 ? ' disabled' : ''}">
+                                 <a class="page-link" href="javascript:void(0)" datapage="${parseInt(params.page) - 1}" aria-label="Previous">
+                                  <span aria-hidden="true">&laquo;</span>
             </a>
-        </li>`
-        console.log(params.totalPages, 'params.total')
-        console.log(params.page, `params.page`)
-        for (let i = 1; i <= params.totalPages; i++) {
-            pagination += `
-        <li class="page-item${i == params.page ? ' active' : ''}"><a class="page-link" id="dataPage" href="javascript:void(0)" id="angka" onclick="changePage(${i})">${i}</a></li>`
-        }
-        pagination += `<li class="page-item${params.page == params.totalPages ? ' disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="changePage(${parseInt(params.page) + 1})" id="dataPage" aria-label="Next">
+        </li>
+`
+    for (let i = 1; i <= params.totalPages; i++) {
+        pagination += `
+        <li class="page-item${i == params.page ? ' active' : ''}"><a class="page-link" href="javascript:void(0)" datapage="${i}">${i}</a></li>`
+    }
+    pagination += `<li class="page-item${params.page == params.totalPages ? ' disabled' : ''}">
+            <a class="page-link" datapage="${parseInt(params.page) + 1}" href="javascript:void(0)" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
-    </ul>
-    `
-        $('#pagination').html(pagination)
-    }).fail(() => {
-        alert('Failed to delete data')
-    })
+    </ul>`
+    $('#pagination').html(pagination)
 }
 
 const changePage = (page) => {

@@ -48,7 +48,7 @@ module.exports = (db) => {
       }
     }
 
-    if (req.query.searchBoolean && req.query.stringCheck == 'on') {
+    if (req.query.searchBoolean && req.query.booleanCheck == 'on') {
       wheres['boolean'] = JSON.parse(req.query.boolean)
     }
 
