@@ -136,7 +136,6 @@ document.getElementById("form-users").addEventListener("submit", (event) => {
 });
 
 document.getElementById("form-search").addEventListener("submit", (event) => {
-    console.log('FORM JALAN')
     event.preventDefault()
     const page = 1
     const string = document.getElementById('searchString').value
@@ -146,7 +145,6 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
     const endDate = document.getElementById('searchEnd').value
     const boolean = document.getElementById('searchBoolean').value
     params = { ...params, string, integer, float, startDate, endDate, boolean, page }
-    console.log(params)
     readData()
 });
 
