@@ -1,54 +1,17 @@
 let editID = null
 let params = {
-    limit: 3,
-    page: 1,
-    sortBy: '_id',
-    sortMode: 1
+    page: 1
 }
-let link = new URLSearchParams(params).toString()
-
-$(document).ready(() => {
-    readData()
-
-    $("#form-users").submit((event) => {
-        event.preventDefault()
-        saveData()
-    });
-
-    $("#form-search").submit((event) => {
-        event.preventDefault()
-        const page = 1
-        const string = $('#searchString').val()
-        const integer = $('#searchInteger').val()
-        const float = $('#searchFloat').val()
-        const startDate = $('#searchStart').val()
-        const endDate = $('#searchEnd').val()
-        const boolean = $('#searchBoolean').val()
-        // console.log(string, integer, float, startDate, endDate, boolean, 'DATA SEARCH')
-        params = { ...params, string, integer, float, startDate, endDate, boolean, page }
-        readData({ string, integer, float, startDate, endDate, boolean })
-    });
-
-    $('#pagination').on('click', '.page-link', function (event) {
-        event.preventDefault()
-        params = { ...params, page: parseInt($(this).attr('datapage')) }
-        readData()
-    });
-})
 
 // VIEW OR GETTING DATA
 const readData = () => {
     $.ajax({
         method: "GET",
-        url: "http://localhost:3006/users"
+        url: `http://localhost:3006/users?${new URLSearchParams(params).toString()}`
     }).done((data) => {
         params = { ...params, totalPages: data.totalPages }
         let html = ''
-        let offset = (parseInt(params.page) - 1) * params.limit
-        console.log(params.page, 'page')
-        console.log(data.totalPages, 'totalPages')
-        console.log(params.limit, 'limit')
-        console.log(offset, 'offset')
+        let offset = data.offset
         data.data.forEach((item, index) => {
             html += `
                 <tr>
@@ -166,8 +129,38 @@ const changePage = (page) => {
 // RESET DATA
 const resetData = () => {
     $("#form-search").trigger('reset')
+    params.page = 1
     readData()
 }
+
+$(document).ready(() => {
+    readData()
+
+    $("#form-users").submit((event) => {
+        event.preventDefault()
+        saveData()
+    });
+
+    $("#form-search").submit((event) => {
+        event.preventDefault()
+        const page = 1
+        const string = $('#searchString').val()
+        const integer = $('#searchInteger').val()
+        const float = $('#searchFloat').val()
+        const startDate = $('#searchStart').val()
+        const endDate = $('#searchEnd').val()
+        const boolean = $('#searchBoolean').val()
+        // console.log(string, integer, float, startDate, endDate, boolean, 'DATA SEARCH')
+        params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+        readData({ string, integer, float, startDate, endDate, boolean })
+    });
+
+    $('#pagination').on('click', '.page-link', function (event) {
+        event.preventDefault()
+        params = { ...params, page: parseInt($(this).attr('datapage')) }
+        readData()
+    });
+})
 
 $('th').click(function () {
     var table = $(this).parents('table').eq(0)

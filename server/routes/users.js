@@ -6,13 +6,11 @@ const moment = require('moment')
 module.exports = (db) => {
   // ROUTER GET
   router.get('/', (req, res) => {
-    // const url = req.url == '/' ? '/?page=1&sortBy=string&sortMode=1' : req.url;
     const page = req.query.page || 1;
     const limit = 3;
-    const offset = limit == 'all' ? 0 : (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
     const wheres = {}
-    // const filter = `&idCheck=${req.query.idCheck}&id=${req.query.id}&stringCheck=${req.query.stringCheck}&string=${req.query.string}&integerCheck=${req.query.integerCheck}&integer=${req.query.integer}&floatCheck=${req.query.floatCheck}&float=${req.query.float}&dateCheck=${req.query.dateCheck}&startDate=${req.query.startDate}&endDate=${req.query.endDate}&booleanCheck=${req.query.booleanCheck}&boolean=${req.query.boolean}`
 
     // SORTING
     const sortMongo = {}
@@ -23,32 +21,30 @@ module.exports = (db) => {
     sortMongo[sortBy] = sortMode == "asc" ? 1 : -1;
 
     // FILTERS
-    if (req.query.searchString && req.query.stringCheck == 'on') {
+    if (req.query.searchString) {
       wheres["string"] = new RegExp(`${req.query.string}`, 'i')
     }
 
-    if (req.query.searchInteger && req.query.integerCheck == 'on') {
+    if (req.query.searchInteger) {
       wheres['integer'] = parseInt(req.query.integer)
     }
 
-    if (req.query.searchFloat && req.query.floatCheck == 'on') {
+    if (req.query.searchFloat) {
       wheres['float'] = JSON.parse(req.query.float)
     }
 
-    if (req.query.dateCheck == "on") {
-      if (req.query.searchStart && req.query.searchEnd) {
-        wheres["date"] = {
-          $gte: new Date(`${req.query.searchStart}`),
-          $lte: new Date(`${req.query.searchEnd}`)
-        }
-      } else if (req.query.searchStart) {
-        wheres["date"] = { $gte: new Date(`${req.query.searchStart}`) };
-      } else if (req.query.searchEnd) {
-        wheres["date"] = { $lte: new Date(`${req.query.searchEnd}`) };
+    if (req.query.searchStart && req.query.searchEnd) {
+      wheres["date"] = {
+        $gte: new Date(`${req.query.searchStart}`),
+        $lte: new Date(`${req.query.searchEnd}`)
       }
+    } else if (req.query.searchStart) {
+      wheres["date"] = { $gte: new Date(`${req.query.searchStart}`) };
+    } else if (req.query.searchEnd) {
+      wheres["date"] = { $lte: new Date(`${req.query.searchEnd}`) };
     }
 
-    if (req.query.searchBoolean && req.query.booleanCheck == 'on') {
+    if (req.query.boolean) {
       wheres['boolean'] = JSON.parse(req.query.boolean)
     }
 
@@ -56,16 +52,17 @@ module.exports = (db) => {
     db.collection("dataBread").find(wheres).count((err, data) => {
       if (err) { return res.json({ success: false }) }
       const total = data;
-      const totalPages = limit == 'all' ? 1 : Math.ceil(total / limit)
-      const limitation = limit == 'all' ? {} : { limit: parseInt(limit), skip: offset }
+      const totalPages = Math.ceil(total / limit)
+      const limitation = { limit: parseInt(limit), skip: offset }
 
       db.collection("dataBread").find(wheres).skip(offset).limit(limit, limitation).sort(sortMongo).toArray((err, data) => {
         if (err) return res.json({ success: false, err })
         res.json({
           success: true,
           data,
-          limit,
+          limitation,
           page,
+          offset,
           totalPages
         })
       })

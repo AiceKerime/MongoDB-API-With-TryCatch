@@ -1,13 +1,11 @@
 let editID = null
 let params = {
-    limit: 3,
-    page: 1,
+    page: 1
 }
-let link = new URLSearchParams(params).toString()
 
 // VIEW OR GETTING DATA
 const readData = () => {
-    fetch('http://localhost:3006/users').then((response) => {
+    fetch(`http://localhost:3006/users?${new URLSearchParams(params).toString()}`).then((response) => {
         if (!response.ok) {
             throw new Erorr(`HTTP error! status: ${response.status}`)
         }
@@ -15,7 +13,7 @@ const readData = () => {
     }).then((data) => {
         params = { ...params, totalPages: data.totalPages }
         let html = ''
-        let offset = (parseInt(params.page) - 1) * params.limit
+        let offset = data.offset
         data.data.forEach((item, index) => {
             html += `
                 <tr>
@@ -26,11 +24,11 @@ const readData = () => {
                     <td>${moment(item.date).format('DD MMMM YYYY')}</td>
                     <td>${item.boolean}</td>
                     <td>
-                        <button type="submit" onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                        <button type="submit" id="delete" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button id="delete" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>
-                `
+    `
         })
         document.getElementById('table-users').innerHTML = html
         pagination()
@@ -53,12 +51,13 @@ const saveData = () => {
         fetch('http://localhost:3006/users/add', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json '
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ string, integer, float, date, boolean })
-        }).then((response) => response.json()).then((data) => {
-            readData()
-        })
+        }).then((response) => response.json())
+            .then((data) => {
+                readData()
+            })
     } else {
         fetch(`http://localhost:3006/users/edit/${editID}`, {
             method: 'PUT',
@@ -81,6 +80,7 @@ const saveData = () => {
 
 // EDIT
 const editData = (user) => {
+    // console.log(user)
     editID = user._id
     document.getElementById('string').value = user.string
     document.getElementById('integer').value = user.integer
@@ -136,6 +136,7 @@ document.getElementById("form-users").addEventListener("submit", (event) => {
 });
 
 document.getElementById("form-search").addEventListener("submit", (event) => {
+    console.log('FORM JALAN')
     event.preventDefault()
     const page = 1
     const string = document.getElementById('searchString').value
@@ -145,6 +146,7 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
     const endDate = document.getElementById('searchEnd').value
     const boolean = document.getElementById('searchBoolean').value
     params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+    console.log(params)
     readData()
 });
 
