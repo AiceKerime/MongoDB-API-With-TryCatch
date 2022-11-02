@@ -6,10 +6,50 @@ let params = {
 $(document).ready(() => {
     readData()
 
-    $("#form-users").submit((event) => {
+    // SAVE DATA
+    $("#form-users").on("submit", (event) => {
         event.preventDefault()
         saveData()
     });
+
+    // SEARCH
+    $("#form-search").on("submit", (event) => {
+        event.preventDefault()
+        const page = 1
+        const string = $('#searchString').val()
+        const integer = $('#searchInteger').val()
+        const float = $('#searchFloat').val()
+        const fromDate = $('#searchStartDate').val()
+        const toDate = $('#searchEndDate').val()
+        const boolean = $('#searchBoolean').val()
+        console.log(boolean)
+        params = { ...params, string, integer, float, fromDate, toDate, boolean, page }
+        readData()
+    });
+
+    // RESET & REMOVE FUNCTION
+    $('#resetData').on("click", (event) => {
+        event.preventDefault()
+        const page = 1
+        $("#form-search").trigger('reset')
+        params = { page }
+        readData()
+    })
+
+    $('th').click(function () {
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        this.asc = !this.asc
+        if (!this.asc) { rows = rows.reverse() }
+        for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+    })
+    function comparer(index) {
+        return function (a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    function getCellValue(row, index) { return $(row).children('td').eq(index).text() }
 })
 
 // VIEW OR GETTING DATA
@@ -92,7 +132,7 @@ const editData = (user) => {
     $('#integer').val(user.integer)
     $('#float').val(user.float)
     $('#date').val(moment(user.date).format('YYYY-MM-DD'))
-    document.getElementById('boolean').value = user.boolean
+    $('#boolean').val(user.boolean)
 }
 
 // DELETE
@@ -136,39 +176,3 @@ function changePage(page) {
     params = { ...params, page }
     readData()
 }
-
-$("#form-search").on("submit", (event) => {
-    event.preventDefault()
-    const page = 1
-    const string = $('#searchString').val()
-    const integer = $('#searchInteger').val()
-    const float = $('#searchFloat').val()
-    const fromDate = $('#searchStartDate').val()
-    const toDate = $('#searchEndDate').val()
-    const boolean = document.getElementById('searchBoolean').value
-    console.log(boolean)
-    params = { ...params, string, integer, float, fromDate, toDate, boolean, page }
-    readData()
-});
-
-
-// RESET & REMOVE FUNCTION
-function resetData() {
-    $("#form-search").trigger('reset')
-    readData()
-}
-
-$('th').click(function () {
-    var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-    this.asc = !this.asc
-    if (!this.asc) { rows = rows.reverse() }
-    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
-})
-function comparer(index) {
-    return function (a, b) {
-        var valA = getCellValue(a, index), valB = getCellValue(b, index)
-        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-    }
-}
-function getCellValue(row, index) { return $(row).children('td').eq(index).text() }

@@ -6,16 +6,56 @@ let params = {
 $(document).ready(() => {
     readData()
 
-    $("#form-users").submit((event) => {
+    // SAVE DATA
+    $("#form-users").on("submit", (event) => {
         event.preventDefault()
         saveData()
     });
+
+    // SEARCH
+    $("#form-search").on("submit", (event) => {
+        event.preventDefault()
+        const page = 1
+        const string = $('#searchString').val()
+        const integer = $('#searchInteger').val()
+        const float = $('#searchFloat').val()
+        const fromDate = $('#searchStartDate').val()
+        const toDate = $('#searchEndDate').val()
+        const boolean = $('#searchBoolean').val()
+        console.log(boolean)
+        params = { ...params, string, integer, float, fromDate, toDate, boolean, page }
+        readData()
+    });
+
+    // RESET & REMOVE FUNCTION
+    $('#resetData').on("click", (event) => {
+        event.preventDefault()
+        const page = 1
+        $("#form-search").trigger('reset')
+        params = { page }
+        readData()
+    })
+
+    $('th').click(function () {
+        var table = $(this).parents('table').eq(0)
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        this.asc = !this.asc
+        if (!this.asc) { rows = rows.reverse() }
+        for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
+    })
+    function comparer(index) {
+        return function (a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    function getCellValue(row, index) { return $(row).children('td').eq(index).text() }
 })
 
 // VIEW OR GETTING DATA
 const readData = () => {
     $.ajax({
-        method: "GET",
+        method: 'GET',
         url: `http://localhost:3006/users?${new URLSearchParams(params).toString()}`
     }).done((data) => {
         params = { ...params, totalPages: data.totalPages }
@@ -31,11 +71,11 @@ const readData = () => {
                     <td>${moment(item.date).format('DD MMMM YYYY')}</td>
                     <td>${item.boolean}</td>
                     <td>
-                        <button type="submit" onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                        <button type="submit" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <button onclick='editData(${JSON.stringify(item)})' class="btn btn-custom"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button id="delete" onclick="deleteData('${item._id}')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
                     </td>
                 </tr>
-                `
+    `
         })
         $('#table-users').html(html)
         pagination()
@@ -44,7 +84,8 @@ const readData = () => {
     })
 }
 
-// ADD & Edit
+
+// ADD
 const saveData = () => {
     const string = $('#string').val()
     const integer = $('#integer').val()
@@ -87,7 +128,6 @@ const saveData = () => {
 // EDIT
 const editData = (user) => {
     editID = user._id
-    console.log(user)
     $('#string').val(user.string)
     $('#integer').val(user.integer)
     $('#float').val(user.float)
@@ -110,64 +150,29 @@ const deleteData = (id) => {
 
 // PAGINATION
 const pagination = () => {
-    let pagination = `<ul class="pagination">
-                               <li class="page-item${params.page == 1 ? ' disabled' : ''}">
-                                 <a class="page-link" href="javascript:void(0)" datapage="${parseInt(params.page) - 1}" aria-label="Previous">
-                                  <span aria-hidden="true">&laquo;</span>
+    let pagination = `
+    <ul class="pagination">
+        <li class="page-item${params.page <= 1 ? ' disabled' : ''}">
+            <a class="page-link" id="halaman" href="javascript:void(0)" onclick="changePage(${parseInt(params.page) - 1})" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
             </a>
-        </li>
-`
+        </li>`
+    console.log(params.totalPages)
     for (let i = 1; i <= params.totalPages; i++) {
         pagination += `
-        <li class="page-item${i == params.page ? ' active' : ''}"><a class="page-link" href="javascript:void(0)" datapage="${i}">${i}</a></li>`
+        <li class="page-item${i == params.page ? ' active' : ''}"><a class="page-link" id="halaman" href="javascript:void(0)" id="angka" onclick="changePage(${i})">${i}</a></li>`
     }
     pagination += `<li class="page-item${params.page == params.totalPages ? ' disabled' : ''}">
-            <a class="page-link" datapage="${parseInt(params.page) + 1}" href="javascript:void(0)" aria-label="Next">
+            <a class="page-link" href="javascript:void(0)" onclick="changePage(${parseInt(params.page) + 1})" id="halaman" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
-    </ul>`
+    </ul>
+    `
     $('#pagination').html(pagination)
 }
 
-const changePage = (page) => {
+function changePage(page) {
     params = { ...params, page }
-    console.log(page, 'Change Page')
     readData()
 }
-
-// RESET DATA
-function resetData() {
-    document.getElementById("form-search").reset()
-    readData()
-}
-
-// SEARCH DATA
-$("#form-search").submit((event) => {
-    event.preventDefault()
-    const page = 1
-    const string = $('#searchString').val()
-    const integer = $('#searchInteger').val()
-    const float = $('#searchFloat').val()
-    const startDate = $('#searchStart').val()
-    const endDate = $('#searchEnd').val()
-    const boolean = $('#searchBoolean').val()
-    // console.log(string, integer, float, startDate, endDate, boolean, 'DATA SEARCH')
-    params = { ...params, string, integer, float, startDate, endDate, boolean, page }
-    readData()
-});
-
-$('th').click(function () {
-    var table = $(this).parents('table').eq(0)
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-    this.asc = !this.asc
-    if (!this.asc) { rows = rows.reverse() }
-    for (var i = 0; i < rows.length; i++) { table.append(rows[i]) }
-})
-function comparer(index) {
-    return function (a, b) {
-        var valA = getCellValue(a, index), valB = getCellValue(b, index)
-        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-    }
-}
-function getCellValue(row, index) { return $(row).children('td').eq(index).text() }
