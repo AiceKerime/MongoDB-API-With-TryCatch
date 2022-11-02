@@ -143,10 +143,11 @@ $("#form-search").on("submit", (event) => {
     const string = $('#searchString').val()
     const integer = $('#searchInteger').val()
     const float = $('#searchFloat').val()
-    const startDate = $('#searchStart').val()
-    const endDate = $('#searchEnd').val()
+    const fromDate = $('#searchStartDate').val()
+    const toDate = $('#searchEndDate').val()
     const boolean = document.getElementById('searchBoolean').value
-    params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+    console.log(boolean)
+    params = { ...params, string, integer, float, fromDate, toDate, boolean, page }
     readData()
 });
 
