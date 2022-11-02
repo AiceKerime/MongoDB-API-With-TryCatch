@@ -6,6 +6,7 @@ const moment = require('moment')
 module.exports = (db) => {
   // ROUTER GET
   router.get('/', (req, res) => {
+    console.log(req.query)
     const page = req.query.page || 1;
     const limit = 3;
     const offset = (page - 1) * limit;
@@ -26,34 +27,39 @@ module.exports = (db) => {
     }
 
     if (req.query.integer) {
-      wheres['integer'] = parseInt(req.query.integer)
+      wheres['integer'] = parseInt(req.query.integer, 'i')
     }
 
     if (req.query.float) {
-      wheres['float'] = JSON.parse(req.query.float)
+      wheres['float'] = JSON.parse(req.query.float, 'i')
     }
 
-    if (req.query.fromDate && req.query.toDate) {
+    if (req.query.startDate && req.query.endDate) {
       wheres["date"] = {
-        $gte: new Date(`${req.query.fromDate}`),
-        $lte: new Date(`${req.query.toDate}`)
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate)
       }
-    } else if (req.query.fromDate) {
-      wheres["date"] = { $gte: new Date(`${req.query.fromDate}`) };
-    } else if (req.query.toDate) {
-      wheres["date"] = { $lte: new Date(`${req.query.toDate}`) };
+    } else if (req.query.startDate) {
+      wheres["date"] = { $gte: new Date(req.query.startDate) };
+
+    } else if (req.query.endDate) {
+      wheres["date"] = { $lte: new Date(req.query.endDate) };
     }
 
     if (req.query.boolean) {
       wheres['boolean'] = JSON.parse(req.query.boolean)
     }
 
+    console.log(req.query.startDate, 'start')
+    console.log(req.query.endDate, 'end')
     // Pagination
     db.collection("dataBread").find(wheres).count((err, data) => {
       if (err) { return res.json({ success: false }) }
       const total = data;
       const totalPages = Math.ceil(total / limit)
       const limitation = { limit: parseInt(limit), skip: offset }
+
+      console.log(wheres, 'Where')
 
       db.collection("dataBread").find(wheres).skip(offset).limit(limit, limitation).sort(sortMongo).toArray((err, data) => {
         if (err) return res.json({ success: false, err })
@@ -77,7 +83,7 @@ module.exports = (db) => {
       string: string,
       integer: Number(integer),
       float: parseFloat(float),
-      date: date,
+      date: new Date(date),
       boolean: JSON.parse(boolean)
     }
 

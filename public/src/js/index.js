@@ -141,8 +141,8 @@ document.getElementById("form-search").addEventListener("submit", (event) => {
     const string = document.getElementById('searchString').value
     const integer = document.getElementById('searchInteger').value
     const float = document.getElementById('searchFloat').value
-    const startDate = document.getElementById('searchStart').value
-    const endDate = document.getElementById('searchEnd').value
+    const startDate = document.getElementById('searchStartDate').value
+    const endDate = document.getElementById('searchEndDate').value
     const boolean = document.getElementById('searchBoolean').value
     params = { ...params, string, integer, float, startDate, endDate, boolean, page }
     readData()

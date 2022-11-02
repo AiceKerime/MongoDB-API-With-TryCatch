@@ -3,6 +3,7 @@ let params = {
     page: 1
 }
 
+// CHECKING DOCUMENT
 $(document).ready(() => {
     readData()
 
@@ -10,21 +11,6 @@ $(document).ready(() => {
     $("#form-users").on("submit", (event) => {
         event.preventDefault()
         saveData()
-    });
-
-    // SEARCH
-    $("#form-search").on("submit", (event) => {
-        event.preventDefault()
-        const page = 1
-        const string = $('#searchString').val()
-        const integer = $('#searchInteger').val()
-        const float = $('#searchFloat').val()
-        const fromDate = $('#searchStartDate').val()
-        const toDate = $('#searchEndDate').val()
-        const boolean = $('#searchBoolean').val()
-        console.log(boolean)
-        params = { ...params, string, integer, float, fromDate, toDate, boolean, page }
-        readData()
     });
 
     // RESET & REMOVE FUNCTION
@@ -132,7 +118,7 @@ const editData = (user) => {
     $('#integer').val(user.integer)
     $('#float').val(user.float)
     $('#date').val(moment(user.date).format('YYYY-MM-DD'))
-    $('#boolean').val(user.boolean)
+    $(`#boolean option[value=${user.boolean}]`).prop('selected', true)
 }
 
 // DELETE
@@ -176,3 +162,18 @@ function changePage(page) {
     params = { ...params, page }
     readData()
 }
+
+// SEARCH
+$("#form-search").on("submit", (event) => {
+    event.preventDefault()
+    const page = 1
+    const string = $('#searchString').val()
+    const integer = $('#searchInteger').val()
+    const float = $('#searchFloat').val()
+    const startDate = $('#searchStartDate').val()
+    const endDate = $('#searchEndDate').val()
+    const boolean = $('#searchBoolean').val()
+    console.log(startDate, endDate, 'Start End')
+    params = { ...params, string, integer, float, startDate, endDate, boolean, page }
+    readData()
+});

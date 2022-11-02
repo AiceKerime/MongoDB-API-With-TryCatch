@@ -76,6 +76,10 @@ tbody tr:hover {
     color: #0375ff;
 }
 
+.page-item:active {
+    background-color: #8b9cb1;
+}
+
 .pagination li {
     margin: 0px 0px;
 }
