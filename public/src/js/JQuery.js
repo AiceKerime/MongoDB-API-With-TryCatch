@@ -135,7 +135,7 @@ const deleteData = (id) => {
 }
 
 // PAGINATION
-const pagination = () => {
+const pagination = () => {``
     let pagination = `
     <ul class="pagination">
         <li class="page-item${params.page <= 1 ? ' disabled' : ''}">

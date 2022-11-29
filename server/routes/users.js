@@ -59,7 +59,6 @@ module.exports = (db) => {
       const totalPages = Math.ceil(total / limit)
       const limitation = { limit: parseInt(limit), skip: offset }
 
-      console.log(wheres, 'Where')
 
       db.collection("dataBread").find(wheres).skip(offset).limit(limit, limitation).sort(sortMongo).toArray((err, data) => {
         if (err) return res.json({ success: false, err })
